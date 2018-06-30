@@ -1,24 +1,26 @@
 <template>
 	<div class="hello">
-		{{ name }}
-		<br>
-		{{ btnState ? 'Button Disabled' : 'Button Enabled' }}
-		<button v-on:click="changeName" v-bind:disabled="btnState">Change Name</button>
-		<hr>
 		<div class="holder">
-			<input type="text" placeholder="Enter a skill that you have.." v-model="item">
-			{{ item }}
-
+			<form @submit.prevent="addSkill">
+				<input type="text"
+					placeholder="Enter a skill that you have.."
+					v-model="item"
+					v-validate="'min:5,'"
+					name="item"
+				>
+				<transition name="alert-in" enter-active-class="animated flipInX" leave-active-class="animated flipOutX">
+					<p class="alert" v-if="errors.has('item')">{{ errors.first('item') }}</p>
+				</transition>
+			</form>
 			<h3>My Skills <span class="pull-right"> [ {{ skills.length }} ]</span></h3>
 			<ul>
-				<li v-for="(data, index) in skills" :key="index">{{index}}) {{ data.skill }}</li>
+				<transition-group name="list" enter-active-class="animated bounceInUp" leave-active-class="animated bounceOutDown">
+					<li v-for="(data, index) in skills" :key="index">{{index}}. {{ data.skill }}
+						<span class="fa" v-on:click="remove(index)"></span>
+					</li>
+				</transition-group>
 			</ul>
-			<p v-if="skills.length >= 2">OMG! So Skilled!</p>
-			<p v-else>You need to work!</p>
 		</div>
-		<hr>
-		<div v-bind:class="{ msg: btnState, 'msg-border': btnState }"></div>
-		<hr>
 	</div>
 </template>
 
@@ -28,45 +30,75 @@ export default {
   data() {
     return {
       item: "",
-      name: "This is the interpolated message.",
-      btnState: true,
       skills: [
         { skill: "Vue.JS" },
         { skill: "Angular JS" },
         { skill: "React JS" }
       ]
     };
+  },
+  methods: {
+    addSkill() {
+		this.$validator.validateAll().then((result) => {
+			if(result){
+				this.skills.push({ skill: this.item });
+				this.item = '';
+			} else {
+				console.log("Data Invalid");
+				this.item = '';
+			}
+		});
+	},
+	remove(id){
+		this.skills.splice(id,1);
+	}
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+@import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
+
+/* .hello {
+  margin-left: 40%;
+} */
 h3 {
   margin: 40px 0 0;
 }
 ul {
   list-style-type: none;
   padding: 0;
-  margin-left: 44%;
 }
 li {
-  margin: 0 10px;
+  margin: 1px 10px;
+  padding: 10px;
   text-align: left;
+  background: lightblue;
+  border-left: 2px solid lightseagreen;
 }
 a {
   color: #42b983;
 }
-.msg {
-  background: green;
-  min-height: 30px;
+input {
+  width: 100%;
+  padding: 10px 10px 10px 15px;
 }
-.msg-border {
-  transition: all ease-in 0.4s;
-  box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.4);
+.alert {
+	font-weight: bold;
+	display: inline-block;
+	padding: 5px;
+	margin-top: 5px;
 }
-.msg-border:hover {
-  transition: all ease-in 0.4s;
-  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+span.fa::after {
+	content: '-';
+	font-size: 24px;
+	margin-top: -5px;
+	padding: 0 10px;
+	border-radius: 50%;
+	background: #222;
+	color: #fff;
+	float: right;
+	cursor: pointer;
 }
 </style>

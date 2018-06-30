@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <Skills />
+    <nav>
+      <router-link to="/">Home</router-link>
+      <router-link to="/about">About</router-link>
+    </nav>
+
+    <router-view />
   </div>
 </template>
 
@@ -17,13 +22,34 @@ export default {
 
 <style>
 body {
-  background: lawngreen;
+  background: #eee;
+  display: grid;
+  grid-template-rows: auto;
+  justify-items: center;
+  padding-top: 50px;
+}
+body, html {
+  margin: 0;
+  height: 100%;
 }
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 50%
+}
+nav {
+  text-align: left;
+  padding: 20px 20px 20px 0;
+  margin-bottom: 30px
+}
+nav a {
+  padding: 10px;
+  text-decoration: none;
+  background: #fff;
+  color: rgb(0,110,255);
+  border-radius: 3px;
+  margin-right: 15px;
+  font-weight: bold;
 }
 </style>
